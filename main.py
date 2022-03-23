@@ -17,6 +17,30 @@ def PrintBoard(solutions):
     print("For a(n) " + str(n) + "x" + str(n) +
           " chessboard we get " + str(len(solutions)) + " solutions")
 
+
+# Checks if the row and col given are valid spots to place a queen
+def isValidPosition(curr_row, curr_col, queensArr):
+    # Iterate through each previous queen to validate that the position for the new queen doesn't intersect
+    for i in range(curr_row):
+        # If column is in the same vertical path as other queens then this position isn't valid
+        if queensArr[i] == curr_col:
+            return False
+
+        # Change in X
+        diff_x = queensArr[i] - curr_col
+
+        # Change in Y
+        diff_y = i - curr_row
+
+        # Slope of a pure diagonal line ("/" or "\") is 1 or -1.
+        # Using slope formula `m = Δy / Δx = (y2 - y1) / (x2 - x1)`,
+        # we can determine the slope of the line between our queen and previous queens based on column and row position,
+        # thus to find whether the queen intersects diagonally with previous queens and if so the row and column specified aren't valid
+        if abs(diff_y / diff_x) == 1:
+            return False
+
+    return True
+    
 # queens recursive n problem
 def QueensRecursive(n):
     # Array of all valid queens positions
@@ -34,7 +58,7 @@ def QueensRecursive(n):
             # Iterate through each column in an n by n chessboard
             for col in range(n):
                 # If is a valid position to place queen
-                if isValidPosition(col, queensArr):
+                if isValidPosition(row, col, queensArr):
                     # Add valid position to array of queen positions
                     queensArr.append(col)
 
@@ -43,36 +67,13 @@ def QueensRecursive(n):
                     PlaceQueen(row + 1, queensArr)
 
                     # Backtrack regardless of whether a solution is valid or not, in order to find new solutions
-                    # This is because once a solution is valid, it is pushed to the solutions array
+                    # This is because once a solution is valid, it is pushed to the solutions array, 
+                    # so `queensArr` 
                     queensArr.pop()
                     # Continue iterating through columns
-
-    # Checks if the row and col given are valid spots to place a queen
-    def isValidPosition(curr_col, queensArr):
-        curr_row = len(queensArr)
-        # Iterate through each previous queen to validate that the position for the new queen doesn't intersect
-        for i in range(curr_row):
-            # If column is in the same vertical path as other queens then this position isn't valid
-            if queensArr[i] == curr_col:
-                return False
-
-            # Change in X
-            diff_x = queensArr[i] - curr_col
-
-            # Change in Y
-            diff_y = i - curr_row
-
-            # Slope of a pure diagonal line ("/" or "\") is 1 or -1.
-            # Using slope formula `m = Δy / Δx = (y2 - y1) / (x2 - x1)`,
-            # we can determine the slope of the line between our queen and previous queens based on column and row position,
-            # thus to find whether the queen intersects diagonally with previous queens and if so the row and column specified aren't valid
-            if abs(diff_y / diff_x) == 1:
-                return False
-
-        return True
-
-    PlaceQueen(0, queensArr) #Run recursive method
-
+    
+    # Run recursive method
+    PlaceQueen(0, queensArr)
     return solutions
 
 
@@ -84,29 +85,6 @@ def QueensIterative(n):
     # The index of queens array represents the row, while the value represents the column  (STACK)
     # e.g. queensArr[row] = col
     queensArr = []
-
-    # Checks if the row and col given are valid spots to place a queen
-    def isValidPosition(curr_row, curr_col, queensArr):
-        # Iterate through each previous queen to validate that the position for the new queen doesn't intersect
-        for i in range(curr_row):
-            # If column is in the same vertical path as other queens then this position isn't valid
-            if queensArr[i] == curr_col:
-                return False
-
-            # Change in X
-            diff_x = queensArr[i] - curr_col
-
-            # Change in Y
-            diff_y = i - curr_row
-
-            # Slope of a pure diagonal line ("/" or "\") is 1 or -1.
-            # Using slope formula `m = Δy / Δx = (y2 - y1) / (x2 - x1)`,
-            # we can determine the slope of the line between our queen and previous queens based on column and row position,
-            # thus to find whether the queen intersects diagonally with previous queens and if so the row and column specified aren't valid
-            if abs(diff_y / diff_x) == 1:
-                return False
-
-        return True
 
     row = 0
     col = 0
@@ -127,10 +105,11 @@ def QueensIterative(n):
             return solutions #row=0, col=n
 
         # If row is n, it has successfully iterated through each row and thus has created a valid solution
-        if row == n:  #row: 8 col: 0
+        if row > n - 1:  #row: 8 col: 0
             solutions.append(queensArr.copy())
 
-        if col == n or row == n:
+        # 
+        if col > n - 1 or row > n - 1:
             row -= 1
             col = queensArr.pop() + 1
             
