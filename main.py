@@ -1,8 +1,15 @@
-# Data Structures - N-Qs assignment
+# Data Structures - N-Queens assignment
+
+# By 
+# - Okikioluwa Ojo (100790236) 
+# - Johnathan Howe (100785128) 
+# - Johnathon Tannous (100707434)
 
 # Print the chessboards
 def PrintBoard(solutions):
     n = len(solutions[0])
+
+    # Create chessboard from solutions
     result = ""
     for board in solutions:
         for queen in board:
@@ -13,7 +20,11 @@ def PrintBoard(solutions):
                     result += "-"
             result += "\n"
         result += "\n"
+
+    # Print chessboard
     print(result)
+
+    # e.g. For a(n) 8x8 chessboard we get 92 solutions 
     print("For a(n) " + str(n) + "x" + str(n) +
           " chessboard we get " + str(len(solutions)) + " solutions")
 
@@ -40,7 +51,7 @@ def isValidPosition(curr_row, curr_col, queensArr):
             return False
 
     return True
-    
+
 # queens recursive n problem
 def QueensRecursive(n):
     # Array of all valid queens positions
@@ -50,6 +61,7 @@ def QueensRecursive(n):
     # e.g. queensArr[row] = col
     queensArr = []  
 
+    # Run recursive method
     def PlaceQueen(row, queensArr):
         # If row is n, it has successfully iterated through each row and thus has created a valid solution
         if row == n:
@@ -57,7 +69,7 @@ def QueensRecursive(n):
         else:
             # Iterate through each column in an n by n chessboard
             for col in range(n):
-                # If is a valid position to place queen
+                # Is this column a valid position to place queen? If true do so
                 if isValidPosition(row, col, queensArr):
                     # Add valid position to array of queen positions
                     queensArr.append(col)
@@ -66,13 +78,13 @@ def QueensRecursive(n):
                     # or until no possible solutions are found from current board placement
                     PlaceQueen(row + 1, queensArr)
 
-                    # Backtrack regardless of whether a solution is valid or not, in order to find new solutions
+                    # Backtrack regardless of whether a solution is valid or not in order to find new solutions.
                     # This is because once a solution is valid, it is pushed to the solutions array, 
-                    # so `queensArr` 
+                    # so `queensArr` is no longer necessary for the solution and should focus on finding 
+                    # a new solution
                     queensArr.pop()
                     # Continue iterating through columns
     
-    # Run recursive method
     PlaceQueen(0, queensArr)
     return solutions
 
@@ -82,40 +94,53 @@ def QueensIterative(n):
     # Array of all valid queens positions
     solutions = []
 
-    # The index of queens array represents the row, while the value represents the column  (STACK)
+    # The index of queens array represents the row, while the value represents the column (STACK)
     # e.g. queensArr[row] = col
     queensArr = []
 
     row = 0
     col = 0
+
+    # We don't know how many iterations are required to find all solutions, 
+    # so we use an infinite while loop, which stops when all the solutions have been found
     while True:
         # Iterate through each column in an n by n chessboard
         while col < n:
-            # If is a valid position to place queen
+            # Is this column a valid position to place queen? If true do so
             if (isValidPosition(row, col, queensArr)):
                 # Add valid position to array of queen positions
                 queensArr.append(col)
-                row += 1  # go down one
-                col = 0
+                row += 1  # Go down one row
+                col = 0  # Reset the column
+
+                # Stop looping through columns if a valid queen can be placed
                 break
+            else:
+                # Continue iterating through columns if not valid
+                col += 1
 
-            col += 1
-
-        if row == 0:
-            return solutions #row=0, col=n
-
-        # If row is n, it has successfully iterated through each row and thus has created a valid solution
-        if row > n - 1:  #row: 8 col: 0
+        # If row > n - 1, it has successfully iterated through each row and has found a valid solution
+        # Note: (n - 1) is the largest array index allowed, 
+        # as an index of n (e.g. row: 8) would cause an array overflow exception
+        if row > n - 1:  # e.g. row: 8
             solutions.append(queensArr.copy())
 
-        # 
+        # If row == 0 after the loop has started, then the loop has backtracked and moved forward through all the possible solutions,
+        # thus it returns the solutions in an array
+        if row == 0:
+            return solutions
+
+        # If col or row go past the largest array index allowable (n - 1), 
+        # then they weren't able to find any valid places to place a queen
+        # thus they should backtrack
         if col > n - 1 or row > n - 1:
-            row -= 1
+            # Move to the previous queens' row and column position, 
+            # then move to the next available column for a queen
             col = queensArr.pop() + 1
-            
+            row -= 1
+ 
 PrintBoard(QueensIterative(8))
 PrintBoard(QueensIterative(9))
 
 PrintBoard(QueensRecursive(8))
 PrintBoard(QueensRecursive(9))
-
